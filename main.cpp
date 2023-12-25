@@ -4,20 +4,57 @@
 #include <string>
 #include <Windows.h>
 #include <chrono>
+#include <thread>
 
+//Выводим количество перестановок
+void CoutPerestanovka(int count)
+{
+	std::cout << "\x1b[13;9H\x1b[90mКоличество перестановок:\x1b[0m " << count;
+}
+//Время в потоке
+void Time(std::atomic<bool>& stopFlag)
+{
+	int time = 0;
 
+	std::cout << "\x1b[14;9H\x1b[90mВремя - \x1b[0m" << time;
+	while (stopFlag)
+	{
+		//Выход если stopFlag изменен на false
+		std::cout << "\x1b[14;9H\x1b[90mВремя - \x1b[0m" << time;
+		if (!stopFlag)
+		{
+			std::cout << "\x1b[14;9H\x1b[90mВремя - \x1b[0m" << time;
+			break;
+		}
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+		time++;
+
+	}
+}
+//Подсчет результатов игры
+void Win(int CountPerestonovok)
+{
+	Sleep(400);
+	std::string str = "\x1b[15;9HYou Win!\n\n\t";
+	for (char ch : str)
+	{
+		std::cout << ch;
+		Sleep(60);
+	}
+}
+//Меню
 void Menu(int& command1, int& command2, int& command3)
 {
 	//Нажатая клавиша для выбора режимов
 	int Nazhatai_Clavisha;
 	//Текст главная
-	std::string text = "\n\n\t__--=========-@__@-=========--__\n\n\t\tп_я_т_н_а_ш_к_и\n\n\t  _-=========-@__@-=========-_\n\n\n\tНажмите <ПРОБЕЛ> для продолжения";
+	std::string text = "\n\n\t__--=========-@__@-=========--__\n\n\t\tп_я_т_н_а_ш_к_и\n\n\t  _-=========-@__@-=========-_\n\n\n\t\x1b[90mНажмите <\x1b[0mПРОБЕЛ\x1b[90m> для продолжения\x1b[0m";
 	std::string text2 = "\n\n\t__--=========-@__@-=========--__\n\n\t\tп_я_т_н_а_ш_к_и\n\n\t  _-=========-@__@-=========-_";
 	system("cls");
 	for (char i : text2)
 	{
 		std::cout << i;
-		Sleep(1);
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 	bool count = true;
 	//Главная (ожидает нажатия клавиши)
@@ -25,7 +62,7 @@ void Menu(int& command1, int& command2, int& command3)
 	{
 		for (int i = 39; i < 54; i += 2)
 		{
-			Sleep(100);
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			text[i] -= 32;
 			printf("\x1b[H");
 			std::cout << text;
@@ -41,136 +78,161 @@ void Menu(int& command1, int& command2, int& command3)
 			}
 		}
 	}
-	//Выбор размера поля
-	system("cls");
-	std::cout << "\n\n\tВыберите размер поля:\n\n";
-	printf("\t\x1b[90m<\x1b[0m3 x 3\x1b[90m>\x1b[0m");
-	std::cout << "\n\t\x1b[90m  4 x 4\x1b[0m";
-	do {
-		Nazhatai_Clavisha = _getch();
-		switch (Nazhatai_Clavisha)
-		{
-		case 119:
-			if (command1 != 1)
-			{
-				command1--;
-				printf("\x1b[H");
-				std::cout << "\n\n\tВыберите размер поля:\n\n";
-				std::cout << "\t\x1b[90m<\x1b[0m3 x 3\x1b[90m>\x1b[0m";
-				std::cout << "\n\t\x1b[90m  4 x 4 \x1b[0m";
-			}
-			break;
-		case 115:
-			if (command1 != 2)
-			{
-				command1++;
-				printf("\x1b[H");
-				std::cout << "\n\n\tВыберите размер поля:\n\n";
-				std::cout << "\t\x1b[90m  3 x 3 \x1b[0m";
-				std::cout << "\n\t\x1b[90m<\x1b[0m4 x 4\x1b[90m>\x1b[0m";
-			}
-			break;
-		}
-	} while (Nazhatai_Clavisha != 13);
-
-	//Выбор кто играет
-	system("cls");
-	std::cout << "\n\n\tВыберите игрока:\n\n";
-	std::cout << "\t\x1b[90m<\x1b[0mCPU\x1b[90m>\x1b[0m\n\t\x1b[90m  Человек \x1b[0m";
-	do
+	int count2 = 1;
+	while (count2 < 4)
 	{
-		Nazhatai_Clavisha = _getch();
-		switch (Nazhatai_Clavisha)
+		if (count2 == 0)
 		{
-		case 119:
-			if (command2 != 1)
-			{
-				command2--;
-				printf("\x1b[H");
-				std::cout << "\n\n\tВыберите игрока:\n\n";
-				std::cout << "\t\x1b[90m<\x1b[0mCPU\x1b[90m>\x1b[0m\n\t\x1b[90m  Человек \x1b[0m";
-
-			}
-			break;
-		case 115:
-			if (command2 != 2)
-			{
-				command2++;
-				printf("\x1b[H");
-				std::cout << "\n\n\tВыберите игрока:\n\n";
-				std::cout << "\t\x1b[90m  CPU \x1b[0m\n";
-				printf("\t\x1b[90m<\x1b[0mЧеловек\x1b[90m>\x1b[0m");
-			}
-			break;
+			system("cls");
+			exit(0);
 		}
-
-	} while (Nazhatai_Clavisha != 13);
-
-	//Выбор кто заполняет 
-	system("cls");
-	std::cout << "\n\n\tВыберите способ перемешки:\n\n";
-	std::cout << "\t\x1b[90m<\x1b[0mCPU\x1b[90m>\x1b[0m\n\t\x1b[90m  Ручная \x1b[0m";
-	do
-	{
-		Nazhatai_Clavisha = _getch();
-		switch (Nazhatai_Clavisha)
+		switch (count2)
 		{
-		case 119:
-			if (command3 != 1)
-			{
-				command3--;
-				printf("\x1b[H");
-				std::cout << "\n\n\tВыберите способ перемешки:\n\n";
-				std::cout << "\t\x1b[90m<\x1b[0mCPU\x1b[90m>\x1b[0m\n\t\x1b[90m  Ручная \x1b[0m";
-			}
+		case 1:
+			//Выбор размера поля
+			system("cls");
+			std::cout << "\n\n\tВыберите размер поля:\n\n";
+			std::cout << "\t\x1b[90m<\x1b[0m3 x 3\x1b[90m>\x1b[0m";
+			std::cout << "\n\t\x1b[90m  4 x 4\x1b[0m";
+			std::cout << "\n\n\x1b[90m\n\tВыход {\x1b[0mESC\x1b[90m}\x1b[0m";
+			do {
+				Nazhatai_Clavisha = _getch();
+				if (Nazhatai_Clavisha == 13)
+				{
+					count2 = 2;
+				}
+				switch (Nazhatai_Clavisha)
+				{
+				case 119:
+					if (command1 != 1)
+					{
+						command1--;
+						printf("\x1b[H");
+						std::cout << "\n\n\tВыберите размер поля:\n\n";
+						std::cout << "\t\x1b[90m<\x1b[0m3 x 3\x1b[90m>\x1b[0m";
+						std::cout << "\n\t\x1b[90m  4 x 4 \x1b[0m";
+					}
+					break;
+				case 115:
+					if (command1 != 2)
+					{
+						command1++;
+						printf("\x1b[H");
+						std::cout << "\n\n\tВыберите размер поля:\n\n";
+						std::cout << "\t\x1b[90m  3 x 3 \x1b[0m";
+						std::cout << "\n\t\x1b[90m<\x1b[0m4 x 4\x1b[90m>\x1b[0m";
+					}
+					break;
+				case 27:
+					count2--;
+					Nazhatai_Clavisha = 13;
+					command1 = 1;
+					command2 = 1;
+					command3 = 1;
+					break;
+				}
+			} while (Nazhatai_Clavisha != 13);
 			break;
-		case 115:
-			if (command3 != 2)
+		case 2:
+			//Выбор кто играет
+			system("cls");
+			std::cout << "\n\n\tВыберите игрока:\n\n";
+			std::cout << "\t\x1b[90m<\x1b[0mCPU\x1b[90m>\x1b[0m\n\t\x1b[90m  Человек \x1b[0m";
+			std::cout << "\n\n\x1b[90m\n\t<---  {\x1b[0mESC\x1b[90m}\x1b[0m";
+			do
 			{
-				command3++;
-				printf("\x1b[H");
-				std::cout << "\n\n\tВыберите способ перемешки:\n\n";
-				std::cout << "\t\x1b[90m  CPU \x1b[0m\n\t\x1b[90m<\x1b[0mРучная\x1b[90m>\x1b[0m";;
-			}
+				Nazhatai_Clavisha = _getch();
+				if (Nazhatai_Clavisha == 13)
+				{
+					count2 = 3;
+				}
+				switch (Nazhatai_Clavisha)
+				{
+				case 119:
+					if (command2 != 1)
+					{
+						command2--;
+						printf("\x1b[H");
+						std::cout << "\n\n\tВыберите игрока:\n\n";
+						std::cout << "\t\x1b[90m<\x1b[0mCPU\x1b[90m>\x1b[0m\n\t\x1b[90m  Человек \x1b[0m";
+
+					}
+					break;
+				case 115:
+					if (command2 != 2)
+					{
+						command2++;
+						printf("\x1b[H");
+						std::cout << "\n\n\tВыберите игрока:\n\n";
+						std::cout << "\t\x1b[90m  CPU \x1b[0m\n";
+						printf("\t\x1b[90m<\x1b[0mЧеловек\x1b[90m>\x1b[0m");
+					}
+					break;
+				case 27:
+					count2--;
+					Nazhatai_Clavisha = 13;
+					command1 = 1;
+					command2 = 1;
+					command3 = 1;
+					break;
+				}
+
+			} while (Nazhatai_Clavisha != 13);
+
 			break;
+		case 3:
+			//Выбор кто заполняет 
+			system("cls");
+			std::cout << "\n\n\tВыберите режим перемешивания:\n\n";
+			std::cout << "\t\x1b[90m<\x1b[0mCPU\x1b[90m>\x1b[0m\n\t\x1b[90m  Ручной \x1b[0m";
+			std::cout << "\n\n\x1b[90m\n\t<---  {\x1b[0mESC\x1b[90m}\x1b[0m";
+			do
+			{
+				Nazhatai_Clavisha = _getch();
+				if (Nazhatai_Clavisha == 13)
+				{
+					count2 = 4;
+				}
+				switch (Nazhatai_Clavisha)
+				{
+				case 119:
+					if (command3 != 1)
+					{
+						command3--;
+						printf("\x1b[H");
+						std::cout << "\n\n\tВыберите режим перемешивания:\n\n";
+						std::cout << "\t\x1b[90m<\x1b[0mCPU\x1b[90m>\x1b[0m\n\t\x1b[90m  Ручной \x1b[0m";
+					}
+					break;
+				case 115:
+					if (command3 != 2)
+					{
+						command3++;
+						printf("\x1b[H");
+						std::cout << "\n\n\tВыберите режим перемешивания:\n\n";
+						std::cout << "\t\x1b[90m  CPU \x1b[0m\n\t\x1b[90m<\x1b[0mРучной\x1b[90m>\x1b[0m";;
+					}
+					break;
+				case 27:
+					count2--;
+					Nazhatai_Clavisha = 13;
+					command1 = 1;
+					command2 = 1;
+					command3 = 1;
+					break;
+				}
+
+			} while (Nazhatai_Clavisha != 13);
+
+			break;
+
 		}
-
-	} while (Nazhatai_Clavisha != 13);
-
+	}
 	//Очишение консоли после выбора режимов
 	system("cls");
 }
-//Подсчет результатов игры
-void Win(int CountPerestonovok, const std::chrono::time_point<std::chrono::steady_clock>& start, const std::chrono::time_point<std::chrono::steady_clock>& finish)
-{
-	Sleep(400);
-	std::string str = "\n\tYou Win!";
-	for (char ch : str)
-	{
-		std::cout << ch;
-		Sleep(60);
-	}
-	Sleep(140);
-	std::cout << "\n\t\x1b[90mКоличество совершенных перестоновок:\x1b[0m " << CountPerestonovok << std::endl;
-	std::chrono::seconds duration_sec = std::chrono::duration_cast<std::chrono::seconds>(finish - start);
-	std::chrono::minutes duration_min = std::chrono::duration_cast<std::chrono::minutes>(finish - start);
-	std::chrono::hours duration_hour = std::chrono::duration_cast<std::chrono::hours>(finish - start);
-
-	if (duration_sec.count() < 60)
-	{
-		std::cout << "\t\x1b[90mВремя игры:\x1b[0m " << duration_sec.count() << " сек" << std::endl << std::endl << std::endl;
-	}
-	else if (duration_min.count() < 60)
-	{
-		std::cout << "\t\x1b[90mВремя игры:\x1b[0m " << duration_min.count() << " мин" << std::endl << std::endl << std::endl;
-	}
-	else
-	{
-		std::cout << "\t\x1b[90mВремя игры:\x1b[0m " << duration_hour.count() << " час" << std::endl << std::endl << std::endl;
-	}
-}
 //Заполнение поля изначально 
-void zapolnenye(std::string(&field)[4][4], int x, int y)
+void Zapolnenye(std::string(&field)[4][4], int x, int y)
 {
 	int k = 0;
 	for (int i = 0; i < 4; i++)
@@ -183,7 +245,7 @@ void zapolnenye(std::string(&field)[4][4], int x, int y)
 	y = 0;
 	field[y][x] = "  ";
 }
-void zapolnenye2(std::string(&field2)[3][3], int x, int y)
+void Zapolnenye2(std::string(&field2)[3][3], int x, int y)
 {
 	int k = 0;
 	for (int i = 0; i < 3; i++)
@@ -264,7 +326,7 @@ bool Proverca2(int count, std::string arr[3][3])
 //Выводим поля в консоль
 void DisplayField(std::string field[4][4])
 {
-	std::cout << "\n\n\t\x1b[90m+----+----+----+----+\x1b[0m" << std::endl;
+	std::cout << "\x1b[3;9H\x1b[90m+----+----+----+----+\x1b[0m" << std::endl;
 	for (int i = 0; i < 4; i++)
 	{
 		std::cout << "\t\x1b[90m|\x1b[0m ";
@@ -284,7 +346,7 @@ void DisplayField(std::string field[4][4])
 }
 void DisplayField2(std::string field2[3][3])
 {
-	std::cout << "\n\n\t\x1b[90m+---+---+---+\x1b[0m" << std::endl;
+	std::cout << "\x1b[3;9H\x1b[90m+---+---+---+\x1b[0m" << std::endl;
 	for (int i = 0; i < 3; i++)
 	{
 		std::cout << "\t\x1b[90m|\x1b[0m ";
@@ -299,9 +361,11 @@ void DisplayField2(std::string field2[3][3])
 void User_Zaponeney(std::string(&field)[4][4], int& x, int& y)
 {
 	bool count = true;
-	DisplayField(field);
 	while (count)
 	{
+		//Выводим поле
+		DisplayField(field);
+		std::cout << "\x1b[90m\n\tДля завершения перемешивания нажмите <\x1b[0mESC\x1b[90m>\x1b[0m";
 		switch (_getch())
 		{
 		case 119: // Ключь вверх
@@ -311,8 +375,6 @@ void User_Zaponeney(std::string(&field)[4][4], int& x, int& y)
 				//Делаем смещение пустой ячейки
 				std::swap(field[y][x], field[y - 1][x]);
 				y--;
-				printf("\x1b[H");
-				DisplayField(field);
 			}
 			break;
 		case 115: // Ключ вниз
@@ -322,9 +384,6 @@ void User_Zaponeney(std::string(&field)[4][4], int& x, int& y)
 				//Делаем смещение пустой ячейки
 				std::swap(field[y][x], field[y + 1][x]);
 				y++;
-				//Выводим поле
-				printf("\x1b[H");
-				DisplayField(field);
 			}
 			break;
 		case 100:  //Ключ право
@@ -334,9 +393,6 @@ void User_Zaponeney(std::string(&field)[4][4], int& x, int& y)
 				//Делаем смещение пустой ячейки
 				std::swap(field[y][x], field[y][x + 1]);
 				x++;
-				//Выводим поле
-				printf("\x1b[H");
-				DisplayField(field);
 			}
 			break;
 		case 97:// Ключ лево
@@ -346,9 +402,6 @@ void User_Zaponeney(std::string(&field)[4][4], int& x, int& y)
 				//Делаем смещение пустой ячейки
 				std::swap(field[y][x], field[y][x - 1]);
 				x--;
-				//Выводим поле
-				printf("\x1b[H");
-				DisplayField(field);
 			}
 			break;
 		case 27:
@@ -357,9 +410,8 @@ void User_Zaponeney(std::string(&field)[4][4], int& x, int& y)
 		}
 	}
 	field[y][x] = "  ";
-	system("cls");
 	DisplayField(field);
-	std::cout << "\n\tРучное заполнение успешно завершенно!";
+	std::cout << "\n\tРучное перемешивание успешно завершенно!             ";
 	Sleep(1000);
 	system("cls");
 	DisplayField(field);
@@ -367,9 +419,11 @@ void User_Zaponeney(std::string(&field)[4][4], int& x, int& y)
 void User_Zaponeney2(std::string(&field2)[3][3], int& x, int& y)
 {
 	bool count = true;
-	DisplayField2(field2);
+
 	while (count)
 	{
+		DisplayField2(field2);
+		std::cout << "\x1b[90m\n\tДля завершения перемешивания нажмите <\x1b[0mESC\x1b[90m>\x1b[0m";
 		switch (_getch())
 		{
 		case 119: // Ключь вверх
@@ -379,8 +433,6 @@ void User_Zaponeney2(std::string(&field2)[3][3], int& x, int& y)
 				//Делаем смещение пустой ячейки
 				std::swap(field2[y][x], field2[y - 1][x]);
 				y--;
-				printf("\x1b[H");
-				DisplayField2(field2);
 			}
 			break;
 		case 115: // Ключ вниз
@@ -390,9 +442,6 @@ void User_Zaponeney2(std::string(&field2)[3][3], int& x, int& y)
 				//Делаем смещение пустой ячейки
 				std::swap(field2[y][x], field2[y + 1][x]);
 				y++;
-				//Выводим поле
-				printf("\x1b[H");
-				DisplayField2(field2);
 			}
 			break;
 		case 100:  //Ключ право
@@ -402,9 +451,6 @@ void User_Zaponeney2(std::string(&field2)[3][3], int& x, int& y)
 				//Делаем смещение пустой ячейки
 				std::swap(field2[y][x], field2[y][x + 1]);
 				x++;
-				//Выводим поле
-				printf("\x1b[H");
-				DisplayField2(field2);
 			}
 			break;
 		case 97:// Ключ лево
@@ -414,20 +460,17 @@ void User_Zaponeney2(std::string(&field2)[3][3], int& x, int& y)
 				//Делаем смещение пустой ячейки
 				std::swap(field2[y][x], field2[y][x - 1]);
 				x--;
-				//Выводим поле
-				printf("\x1b[H");
-				DisplayField2(field2);
 			}
 			break;
 		case 27:
 			count = false;
 			break;
 		}
+
 	}
 	field2[y][x] = " ";
-	system("cls");
 	DisplayField2(field2);
-	std::cout << "\n\tРучное заполнение успешно завершенно!";
+	std::cout << "\n\tРучное перемешивание успешно завершенно!                ";
 	Sleep(1000);
 	system("cls");
 	DisplayField2(field2);
@@ -541,6 +584,7 @@ void User_Game(std::string(&field)[4][4], int& x, int& y, int& CountPerestonovok
 			}
 			break;
 		}
+		CoutPerestanovka(CountPerestonovok);
 	}
 }
 void User_Game2(std::string(&field2)[3][3], int& x, int& y, int& CountPerestonovok)
@@ -605,6 +649,7 @@ void User_Game2(std::string(&field2)[3][3], int& x, int& y, int& CountPerestonov
 			}
 			break;
 		}
+		CoutPerestanovka(CountPerestonovok);
 	}
 }
 //Процесс игры (Бот)
@@ -624,8 +669,6 @@ void Bot_Game(std::string(&field)[4][4], int& x, int& y, int& CountPerestonovok)
 				y--;
 				// Увеличение перестановок
 				CountPerestonovok++;
-				printf("\x1b[H");
-				DisplayField(field);
 			}
 			break;
 		case 2: // Ключ вниз
@@ -637,9 +680,6 @@ void Bot_Game(std::string(&field)[4][4], int& x, int& y, int& CountPerestonovok)
 				y++;
 				// Увеличение перестановок
 				CountPerestonovok++;
-				//Выводим поле
-				printf("\x1b[H");
-				DisplayField(field);
 			}
 			break;
 		case 3:  //Ключ право
@@ -651,9 +691,6 @@ void Bot_Game(std::string(&field)[4][4], int& x, int& y, int& CountPerestonovok)
 				x++;
 				// Увеличение перестановок
 				CountPerestonovok++;
-				//Выводим поле
-				printf("\x1b[H");
-				DisplayField(field);
 			}
 			break;
 		case 4:// Ключ лево
@@ -665,12 +702,12 @@ void Bot_Game(std::string(&field)[4][4], int& x, int& y, int& CountPerestonovok)
 				x--;
 				// Увеличение перестановок
 				CountPerestonovok++;
-				//Выводим поле
-				printf("\x1b[H");
-				DisplayField(field);
 			}
 			break;
 		}
+		//Выводим поле
+		DisplayField(field);
+		CoutPerestanovka(CountPerestonovok);
 	}
 }
 void Bot_Game2(std::string(&field2)[3][3], int& x, int& y, int& CountPerestonovok)
@@ -678,7 +715,6 @@ void Bot_Game2(std::string(&field2)[3][3], int& x, int& y, int& CountPerestonovo
 	while (!isFinalField2(field2))
 	{
 		int RN = rand() % 4 + 1;
-
 		switch (RN)
 		{
 		case 1: // Ключь вверх
@@ -690,10 +726,6 @@ void Bot_Game2(std::string(&field2)[3][3], int& x, int& y, int& CountPerestonovo
 				y--;
 				// Увеличение перестановок
 				CountPerestonovok++;
-
-				//Выводим поле
-				printf("\x1b[H");
-				DisplayField2(field2);
 			}
 			break;
 		case 2: // Ключ вниз
@@ -702,15 +734,9 @@ void Bot_Game2(std::string(&field2)[3][3], int& x, int& y, int& CountPerestonovo
 			{
 				//Делаем смещение пустой ячейки
 				std::swap(field2[y][x], field2[y + 1][x]);
-
 				y++;
-
 				// Увеличение перестановок
 				CountPerestonovok++;
-
-				//Выводим поле
-				printf("\x1b[H");
-				DisplayField2(field2);
 			}
 			break;
 		case 3: //Ключ право
@@ -720,13 +746,8 @@ void Bot_Game2(std::string(&field2)[3][3], int& x, int& y, int& CountPerestonovo
 				//Делаем смещение пустой ячейки
 				std::swap(field2[y][x], field2[y][x + 1]);
 				x++;
-
 				// Увеличение перестановок
 				CountPerestonovok++;
-
-				//Выводим поле
-				printf("\x1b[H");
-				DisplayField2(field2);
 			}
 			break;
 		case 4: // Ключ лево
@@ -736,19 +757,19 @@ void Bot_Game2(std::string(&field2)[3][3], int& x, int& y, int& CountPerestonovo
 				//Делаем смещение пустой ячейки
 				std::swap(field2[y][x], field2[y][x - 1]);
 				x--;
-
 				// Увеличение перестановок
 				CountPerestonovok++;
-
-				//Выводим поле
-				printf("\x1b[H");
-				DisplayField2(field2);
 			}
 			break;
 		}
+
+		//Выводим поле
+		DisplayField2(field2);
+		//Выводим колличество перестановок
+		CoutPerestanovka(CountPerestonovok);
 	}
 }
-
+//Вызов функций (мин логика)
 int main()
 {
 	//Скрытие курсора
@@ -795,20 +816,17 @@ int main()
 		{
 		case 1:
 			//3x3
-			zapolnenye2(field2, x, y);
+			Zapolnenye2(field2, x, y);
 			User_Zaponeney2(field2, x, y);
 			break;
 		case 2:
 			//4x4
-			zapolnenye(field, x, y);
+			Zapolnenye(field, x, y);
 			User_Zaponeney(field, x, y);
 			break;
 		}
 		break;
 	}
-	//Записываю время начала ишры
-	auto start = std::chrono::steady_clock::now();
-	auto finish = std::chrono::steady_clock::now();
 	//Кто будет играть 
 	switch (command2)
 	{
@@ -824,7 +842,13 @@ int main()
 			break;
 		}
 		//Собирает <Человек>
+
 	case 2:
+		//Флаг для управлениее потоком
+		std::atomic<bool> stopFlag(true);
+		//Запуск потока для времени
+		std::thread TwoThread([&stopFlag]() { Time(stopFlag); });
+		CoutPerestanovka(CountPerestonovok);
 		switch (command1)
 		{
 		case 1:
@@ -834,15 +858,15 @@ int main()
 			User_Game(field, x, y, CountPerestonovok);
 			break;
 		}
+		stopFlag = false;
+		TwoThread.join();
 	}
-	//Записываем время окончания сборки
-	finish = std::chrono::steady_clock::now();
+
 	//Вывод результатов игры
-	Win(CountPerestonovok, start, finish);
+	Win(CountPerestonovok);
 	system("pause");
 	exit(0);
 
 	return 0;
 }
-
 
